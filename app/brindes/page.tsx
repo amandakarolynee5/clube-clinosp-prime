@@ -13,21 +13,27 @@ import {
   Search,
   Info,
 } from "lucide-react";
+
 import {
-  Brinde,
   getBrindes,
   createBrinde,
   updateBrinde,
   deleteBrinde,
 } from "../lib/services/brindesService";
 
-type BrindePremium = Brinde & {
+type Brinde = {
+  id: string;
+  nome: string;
+  pontos: number;
+  estoque: number;
+  imagem?: string | null;
   descricao?: string | null;
   especificacoes?: string | null;
+  created_at?: string;
 };
 
 export default function BrindesPage() {
-  const [brindes, setBrindes] = useState<BrindePremium[]>([]);
+  const [brindes, setBrindes] = useState<Brinde[]>([]);
   const [nome, setNome] = useState("");
   const [pontos, setPontos] = useState("");
   const [estoque, setEstoque] = useState("");
@@ -36,7 +42,7 @@ export default function BrindesPage() {
   const [imagem, setImagem] = useState("");
   const [busca, setBusca] = useState("");
   const [editandoId, setEditandoId] = useState<string | null>(null);
-  const [detalhe, setDetalhe] = useState<BrindePremium | null>(null);
+  const [detalhe, setDetalhe] = useState<Brinde | null>(null);
   const [toast, setToast] = useState("");
   const [carregando, setCarregando] = useState(false);
 
@@ -53,7 +59,7 @@ export default function BrindesPage() {
     try {
       setCarregando(true);
       const data = await getBrindes();
-      setBrindes(data as BrindePremium[]);
+      setBrindes((data || []) as Brinde[]);
     } catch (error) {
       mostrarToast("Erro ao buscar brindes");
       console.error(error);
@@ -117,7 +123,7 @@ export default function BrindesPage() {
     setEditandoId(null);
   }
 
-  function editar(b: BrindePremium) {
+  function editar(b: Brinde) {
     setNome(b.nome);
     setPontos(String(b.pontos));
     setEstoque(String(b.estoque));

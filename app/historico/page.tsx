@@ -10,9 +10,9 @@ type Movimentacao = {
   descricao: string;
   pontos: number;
   created_at: string;
-  pacientes: {
+  pacientes?: {
     nome: string;
-  };
+  } | null;
 };
 
 type Resgate = {
@@ -20,12 +20,12 @@ type Resgate = {
   pontos_usados: number;
   status: string;
   created_at: string;
-  pacientes: {
+  pacientes?: {
     nome: string;
-  };
-  brindes: {
+  } | null;
+  brindes?: {
     nome: string;
-  };
+  } | null;
 };
 
 export default function HistoricoPage() {
@@ -67,8 +67,27 @@ export default function HistoricoPage() {
     if (erroResgates) console.error(erroResgates);
     if (erroMovimentacoes) console.error(erroMovimentacoes);
 
-    setResgates((resgatesData as Resgate[]) || []);
-    setMovimentacoes((movimentacoesData as Movimentacao[]) || []);
+    const resgatesFormatados =
+      resgatesData?.map((item: any) => ({
+        ...item,
+        pacientes: Array.isArray(item.pacientes)
+          ? item.pacientes[0]
+          : item.pacientes,
+        brindes: Array.isArray(item.brindes)
+          ? item.brindes[0]
+          : item.brindes,
+      })) || [];
+
+    const movimentacoesFormatadas =
+      movimentacoesData?.map((item: any) => ({
+        ...item,
+        pacientes: Array.isArray(item.pacientes)
+          ? item.pacientes[0]
+          : item.pacientes,
+      })) || [];
+
+    setResgates(resgatesFormatados as Resgate[]);
+    setMovimentacoes(movimentacoesFormatadas as Movimentacao[]);
 
     setCarregando(false);
   }
@@ -195,7 +214,9 @@ export default function HistoricoPage() {
               >
                 <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 xl:items-center">
                   <div className="xl:col-span-3">
-                    <p className="font-black">{item.pacientes?.nome}</p>
+                    <p className="font-black">
+                      {item.pacientes?.nome || "Paciente"}
+                    </p>
                     <p className="text-sm text-gray-500">
                       {formatarData(item.created_at)}
                     </p>
@@ -203,7 +224,9 @@ export default function HistoricoPage() {
 
                   <div className="xl:col-span-3">
                     <p className="text-sm text-gray-500">Brinde</p>
-                    <p className="font-bold">{item.brindes?.nome}</p>
+                    <p className="font-bold">
+                      {item.brindes?.nome || "Brinde"}
+                    </p>
                   </div>
 
                   <div className="xl:col-span-2">
@@ -272,7 +295,9 @@ export default function HistoricoPage() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:items-center">
                   <div>
                     <p className="text-sm text-gray-500">Paciente</p>
-                    <p className="font-black">{item.pacientes?.nome}</p>
+                    <p className="font-black">
+                      {item.pacientes?.nome || "Paciente"}
+                    </p>
                   </div>
 
                   <div>

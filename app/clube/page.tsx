@@ -43,9 +43,9 @@ type Resgate = {
   pontos_usados: number;
   status: string;
   created_at: string;
-  brindes: {
+  brindes?: {
     nome: string;
-  }[] | null;
+  } | null;
 };
 
 type Movimentacao = {
@@ -113,7 +113,16 @@ export default function ClubePage() {
       .order("created_at", { ascending: false });
 
     setBrindes(brindesData || []);
-    setResgates((resgatesData as unknown as Resgate[]) || []);
+
+    const resgatesFormatados =
+      resgatesData?.map((item: any) => ({
+        ...item,
+        brindes: Array.isArray(item.brindes)
+          ? item.brindes[0]
+          : item.brindes,
+      })) || [];
+
+    setResgates(resgatesFormatados as Resgate[]);
     setMovimentacoes((movimentacoesData as Movimentacao[]) || []);
   }
 
@@ -513,7 +522,7 @@ export default function ClubePage() {
                 {resgates.map((item) => (
                   <div key={item.id} className="bg-[#f7fafc] rounded-2xl p-4">
                     <p className="font-black">
-                      {item.brindes?.[0]?.nome || "Brinde"}
+                      {item.brindes?.nome || "Brinde"}
                     </p>
 
                     <p className="text-sm text-gray-500">

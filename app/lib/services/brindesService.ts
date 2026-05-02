@@ -22,18 +22,21 @@ export async function getBrindes() {
   return (data || []) as Brinde[];
 }
 
-export async function criarBrinde(brinde: Omit<Brinde, "id" | "created_at">) {
+export async function createBrinde(
+  brinde: Omit<Brinde, "id" | "created_at">
+) {
   const { data, error } = await supabase
     .from("brindes")
     .insert([brinde])
-    .select();
+    .select()
+    .single();
 
   if (error) throw error;
 
-  return data;
+  return data as Brinde;
 }
 
-export async function atualizarBrinde(
+export async function updateBrinde(
   id: string,
   brinde: Partial<Omit<Brinde, "id" | "created_at">>
 ) {
@@ -41,20 +44,18 @@ export async function atualizarBrinde(
     .from("brindes")
     .update(brinde)
     .eq("id", id)
-    .select();
+    .select()
+    .single();
 
   if (error) throw error;
 
-  return data;
+  return data as Brinde;
 }
 
-export async function deletarBrinde(id: string) {
+export async function deleteBrinde(id: string) {
   const { error } = await supabase.from("brindes").delete().eq("id", id);
 
   if (error) throw error;
-}
 
-// compatibilidade com nomes em inglês, caso alguma página use
-export const createBrinde = criarBrinde;
-export const updateBrinde = atualizarBrinde;
-export const deleteBrinde = deletarBrinde;
+  return true;
+}

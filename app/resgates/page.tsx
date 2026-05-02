@@ -5,8 +5,6 @@ import {
   Gift,
   UserCheck,
   Sparkles,
-  Package,
-  Star,
   CheckCircle,
   X,
   Info,
@@ -57,8 +55,8 @@ export default function ResgatesPage() {
       .select("*")
       .order("pontos", { ascending: true });
 
-    setPacientes(pacientesData || []);
-    setBrindes(brindesData || []);
+    setPacientes((pacientesData || []) as Paciente[]);
+    setBrindes((brindesData || []) as Brinde[]);
     setCarregando(false);
   }
 
@@ -100,7 +98,6 @@ export default function ResgatesPage() {
       .eq("id", paciente.id);
 
     if (erroPaciente) {
-      console.error(erroPaciente);
       mostrarToast("Erro ao atualizar paciente.");
       return;
     }
@@ -113,7 +110,6 @@ export default function ResgatesPage() {
       .eq("id", brindeSelecionado.id);
 
     if (erroBrinde) {
-      console.error(erroBrinde);
       mostrarToast("Erro ao atualizar estoque.");
       return;
     }
@@ -128,14 +124,22 @@ export default function ResgatesPage() {
     ]);
 
     if (erroResgate) {
-      console.error(erroResgate);
       mostrarToast("Erro ao registrar resgate.");
       return;
     }
 
+    await supabase.from("movimentacoes").insert([
+      {
+        paciente_id: paciente.id,
+        tipo: "Resgate",
+        descricao: `Resgate solicitado: ${brindeSelecionado.nome}`,
+        pontos: -brindeSelecionado.pontos,
+      },
+    ]);
+
     setBrindeSelecionado(null);
     mostrarToast("Resgate solicitado com sucesso!");
-    carregarDados();
+    await carregarDados();
   }
 
   function abrirDetalhes(brinde: Brinde) {
@@ -164,7 +168,8 @@ export default function ResgatesPage() {
           </h1>
 
           <p className="text-white/80 mt-4 text-lg max-w-2xl">
-            Escolha o paciente, visualize os brindes disponíveis e realize o resgate de forma simples e elegante.
+            Escolha o paciente, visualize os brindes disponíveis e realize o
+            resgate de forma simples e elegante.
           </p>
         </div>
       </section>
@@ -178,7 +183,8 @@ export default function ResgatesPage() {
           <div>
             <h2 className="text-2xl font-black">Selecionar paciente</h2>
             <p className="text-sm text-gray-500">
-              No seletor aparece apenas o nome. Os pontos aparecem depois da seleção.
+              No seletor aparece apenas o nome. Os pontos aparecem depois da
+              seleção.
             </p>
           </div>
         </div>
@@ -215,7 +221,8 @@ export default function ResgatesPage() {
           <div>
             <h2 className="text-3xl font-black">Catálogo de brindes</h2>
             <p className="text-gray-500">
-              O paciente poderá visualizar foto, especificações, estoque e pontos necessários.
+              O paciente poderá visualizar foto, especificações, estoque e
+              pontos necessários.
             </p>
           </div>
         </div>
@@ -270,7 +277,8 @@ export default function ResgatesPage() {
                     <h3 className="text-xl font-black">{brinde.nome}</h3>
 
                     <p className="text-sm text-gray-500 mt-2 line-clamp-2">
-                      {brinde.descricao || "Brinde exclusivo do Clube Clinosp Prime."}
+                      {brinde.descricao ||
+                        "Brinde exclusivo do Clube Clinosp Prime."}
                     </p>
 
                     <div className="grid grid-cols-2 gap-3 mt-5">
@@ -344,10 +352,7 @@ export default function ResgatesPage() {
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-                  <Linha
-                    label="Paciente"
-                    value={paciente.nome}
-                  />
+                  <Linha label="Paciente" value={paciente.nome} />
 
                   <Linha
                     label="Saldo atual"
