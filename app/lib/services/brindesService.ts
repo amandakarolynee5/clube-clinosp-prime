@@ -59,3 +59,9 @@ export async function deleteBrinde(id: string) {
 
   return true;
 }
+
+/* Compatibilidade com nomes antigos */
+export const criarBrinde = createBrinde;
+export const atualizacaoBrinde = updateBrinde;
+export const atualizaçãoBrinde = updateBrinde;
+export const excluirBrinde = deleteBrinde;
