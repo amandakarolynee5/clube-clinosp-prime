@@ -43,9 +43,9 @@ type Resgate = {
   pontos_usados: number;
   status: string;
   created_at: string;
-  brindes?: {
+  brindes: {
     nome: string;
-  };
+  }[] | null;
 };
 
 type Movimentacao = {
@@ -113,7 +113,7 @@ export default function ClubePage() {
       .order("created_at", { ascending: false });
 
     setBrindes(brindesData || []);
-    setResgates((resgatesData as Resgate[]) || []);
+    setResgates((resgatesData as unknown as Resgate[]) || []);
     setMovimentacoes((movimentacoesData as Movimentacao[]) || []);
   }
 
@@ -512,13 +512,18 @@ export default function ClubePage() {
               <div className="space-y-4">
                 {resgates.map((item) => (
                   <div key={item.id} className="bg-[#f7fafc] rounded-2xl p-4">
-                    <p className="font-black">{item.brindes?.nome}</p>
+                    <p className="font-black">
+                      {item.brindes?.[0]?.nome || "Brinde"}
+                    </p>
+
                     <p className="text-sm text-gray-500">
                       {new Date(item.created_at).toLocaleString("pt-BR")}
                     </p>
+
                     <p className="text-red-500 font-black mt-2">
                       -{item.pontos_usados} pts
                     </p>
+
                     <span className="inline-block mt-2 bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold">
                       {item.status}
                     </span>
@@ -541,9 +546,11 @@ export default function ClubePage() {
                 {movimentacoes.map((item) => (
                   <div key={item.id} className="bg-[#f7fafc] rounded-2xl p-4">
                     <p className="font-black">{item.tipo}</p>
+
                     <p className="text-sm text-gray-500">
                       {new Date(item.created_at).toLocaleString("pt-BR")}
                     </p>
+
                     <p
                       className={`font-black mt-2 ${
                         item.pontos < 0 ? "text-red-500" : "text-[#4c9a2a]"
@@ -552,6 +559,7 @@ export default function ClubePage() {
                       {item.pontos > 0 ? "+" : ""}
                       {item.pontos} pts
                     </p>
+
                     {item.descricao && (
                       <p className="text-sm text-gray-500 mt-1">
                         {item.descricao}
