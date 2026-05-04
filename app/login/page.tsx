@@ -72,8 +72,8 @@ export default function LoginPage() {
             <Image
               src={LOGO}
               alt="Clinosp Prime"
-              width={210}
-              height={90}
+              width={350}
+              height={180}
               className="w-auto h-auto mb-8"
             />
 
@@ -108,8 +108,8 @@ export default function LoginPage() {
             <Image
               src={LOGO}
               alt="Clinosp Prime"
-              width={210}
-              height={90}
+              width={350}
+              height={180}
               className="w-auto h-auto"
             />
           </div>

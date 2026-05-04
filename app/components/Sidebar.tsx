@@ -133,10 +133,10 @@ export default function Sidebar() {
           <Image
             src="/logo-clinosp.png"
             alt="Clinosp Prime"
-            width={280}
-            height={150}
+            width={400}
+            height={200}
             priority
-            className="object-contain w-full max-w-[240px]"
+            className="object-contain w-[300px] h-auto"
           />
         </div>
 
