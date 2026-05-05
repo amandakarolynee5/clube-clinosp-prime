@@ -8,6 +8,7 @@ import {
   CheckCircle,
   X,
   Info,
+  Search,
 } from "lucide-react";
 import { supabase } from "../lib/supabase";
 
@@ -24,19 +25,47 @@ type Brinde = {
 type Paciente = {
   id: string;
   nome: string;
+  telefone?: string | null;
   pontos: number;
   nivel: string;
 };
+
+function normalizarTexto(texto: string) {
+  return texto
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
 
 export default function ResgatesPage() {
   const [pacientes, setPacientes] = useState<Paciente[]>([]);
   const [brindes, setBrindes] = useState<Brinde[]>([]);
   const [pacienteId, setPacienteId] = useState("");
+  const [buscaPaciente, setBuscaPaciente] = useState("");
   const [brindeSelecionado, setBrindeSelecionado] = useState<Brinde | null>(null);
   const [toast, setToast] = useState("");
   const [carregando, setCarregando] = useState(false);
 
   const paciente = pacientes.find((p) => p.id === pacienteId);
+
+  const pacientesFiltrados = pacientes.filter((p) => {
+    const buscaOriginal = buscaPaciente.trim();
+
+    if (!buscaOriginal) return false;
+
+    const buscaTexto = normalizarTexto(buscaOriginal);
+    const buscaNumeros = buscaOriginal.replace(/\D/g, "");
+
+    const nome = normalizarTexto(p.nome || "");
+    const telefone = (p.telefone || "").replace(/\D/g, "");
+
+    const encontrouNome = nome.includes(buscaTexto);
+    const encontrouTelefone =
+      buscaNumeros.length > 0 && telefone.includes(buscaNumeros);
+
+    return encontrouNome || encontrouTelefone;
+  });
 
   useEffect(() => {
     carregarDados();
@@ -71,6 +100,11 @@ export default function ResgatesPage() {
     if (pontos >= 2500) return "Ouro";
     if (pontos >= 1000) return "Prata";
     return "Bronze";
+  }
+
+  function selecionarPaciente(p: Paciente) {
+    setPacienteId(p.id);
+    setBuscaPaciente(p.nome);
   }
 
   async function confirmarResgate() {
@@ -183,29 +217,53 @@ export default function ResgatesPage() {
           <div>
             <h2 className="text-2xl font-black">Selecionar paciente</h2>
             <p className="text-sm text-gray-500">
-              No seletor aparece apenas o nome. Os pontos aparecem depois da
-              seleção.
+              Pesquise pelo nome ou telefone do paciente.
             </p>
           </div>
         </div>
 
-        <select
-          value={pacienteId}
-          onChange={(e) => setPacienteId(e.target.value)}
-          className="w-full p-4 rounded-2xl border outline-none bg-white font-bold focus:ring-2 focus:ring-[#174f8c]/20"
-        >
-          <option value="">Selecione um paciente</option>
+        <div className="relative">
+          <Search
+            size={20}
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+          />
 
-          {pacientes.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.nome}
-            </option>
-          ))}
-        </select>
+          <input
+            value={buscaPaciente}
+            onChange={(e) => {
+              setBuscaPaciente(e.target.value);
+              setPacienteId("");
+            }}
+            placeholder="Pesquisar por nome ou telefone..."
+            className="w-full rounded-2xl border bg-white py-4 pl-12 pr-4 font-bold outline-none focus:ring-2 focus:ring-[#174f8c]/20"
+          />
+
+          {buscaPaciente.trim() && pacientesFiltrados.length > 0 && !pacienteId && (
+            <div className="absolute z-40 mt-2 w-full overflow-hidden rounded-2xl border bg-white shadow-xl">
+              {pacientesFiltrados.map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => selecionarPaciente(p)}
+                  className="w-full px-5 py-4 text-left font-bold text-[#071d3a] hover:bg-[#eef4fa] transition"
+                >
+                  {p.nome}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {buscaPaciente.trim() && pacientesFiltrados.length === 0 && !pacienteId && (
+            <div className="absolute z-40 mt-2 w-full rounded-2xl border bg-white px-5 py-4 text-sm font-bold text-gray-500 shadow-xl">
+              Nenhum paciente encontrado.
+            </div>
+          )}
+        </div>
 
         {paciente && (
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
             <InfoBox label="Paciente" value={paciente.nome} />
+            <InfoBox label="Telefone" value={paciente.telefone || "Não informado"} />
             <InfoBox
               label="Saldo disponível"
               value={`${paciente.pontos.toLocaleString("pt-BR")} pts`}
@@ -448,7 +506,7 @@ function InfoBox({ label, value }: { label: string; value: string }) {
   );
 }
 
-function MiniInfo({ label, value }: { label: string; value: string | number }) {
+function MiniInfo({ label, value }: { label: string | number; value: string | number }) {
   return (
     <div className="bg-[#f7fafc] rounded-2xl p-3">
       <p className="text-xs text-gray-500">{label}</p>

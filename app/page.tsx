@@ -391,7 +391,7 @@ export default function Dashboard() {
                 <Line
                   type="monotone"
                   dataKey="pontos"
-                  stroke="#174f8c"
+                  stroke="#063669"
                   strokeWidth={4}
                   dot={{ r: 6 }}
                 />

@@ -380,7 +380,7 @@ export default function ClubePage() {
               </h1>
 
               <p className="text-white/80 mt-4 text-lg">
-                Bem-vindo ao seu Clube Clinosp Prime.
+                Bem-vindo ao  Clube Clinosp Prime.
               </p>
             </div>
 
@@ -583,8 +583,8 @@ export default function ClubePage() {
       </div>
 
       {brindeSelecionado && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl overflow-hidden relative">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-start lg:items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl overflow-hidden relative my-6 lg:my-0">
             <button
               onClick={() => setBrindeSelecionado(null)}
               className="absolute top-4 right-4 z-10 bg-white/90 p-2 rounded-full shadow"
