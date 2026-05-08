@@ -71,7 +71,7 @@ export default function LoginPage() {
           "url('/fundo-login.jpg')",
       }}
     >
-      <section className="w-full max-w-5xl bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2 border border-white">
+      <section className="w-full max-w-5xl bg-white/70 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2 border border-white/40">
         <div className="hidden lg:flex flex-col justify-between bg-gradient-to-br from-[#071d3a] via-[#174f8c] to-[#4c9a2a] text-white p-10 min-h-[580px]">
           <div>
             <Image
@@ -108,7 +108,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="flex flex-col justify-center p-8 sm:p-10 lg:p-12 min-h-[580px] bg-white/95">
+        <div className="flex flex-col justify-center p-8 sm:p-10 lg:p-12 min-h-[580px] bg-white/85">
           <div className="flex justify-center mb-8">
             <Image
               src={LOGO}
