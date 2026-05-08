@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
     images: [
       {
-        url: "/preview.png",
+        url: "https://clube.avaliacaoclinosprime.com.br/preview.png",
         width: 1200,
         height: 630,
         alt: "Clube Clinosp Prime",
