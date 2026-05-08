@@ -54,14 +54,109 @@ type Resgate = {
   status: string;
 };
 
+type EvolucaoPontos = {
+  mes: string;
+  pontos: number;
+};
+
 export default function Dashboard() {
   const [pacientes, setPacientes] = useState<Paciente[]>([]);
   const [resgates, setResgates] = useState<Resgate[]>([]);
+  const [dadosEvolucao, setDadosEvolucao] = useState<EvolucaoPontos[]>([]);
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
     carregarDashboard();
   }, []);
+
+  function converterData(valor: string | null | undefined) {
+    if (!valor) return null;
+
+    const dataDireta = new Date(valor);
+    if (!isNaN(dataDireta.getTime())) return dataDireta;
+
+    const partes = valor.split(" ")[0]?.split("/");
+    if (partes?.length === 3) {
+      const [dia, mes, ano] = partes;
+      const dataFormatada = new Date(Number(ano), Number(mes) - 1, Number(dia));
+
+      if (!isNaN(dataFormatada.getTime())) return dataFormatada;
+    }
+
+    return null;
+  }
+
+  function gerarGraficoEvolucao(
+    pacientesLista: Paciente[],
+    totalFallback: number
+  ) {
+    const meses = [
+      "Jan",
+      "Fev",
+      "Mar",
+      "Abr",
+      "Mai",
+      "Jun",
+      "Jul",
+      "Ago",
+      "Set",
+      "Out",
+      "Nov",
+      "Dez",
+    ];
+
+    const hoje = new Date();
+    const anoAtual = hoje.getFullYear();
+
+    const pontosPorMes: Record<number, number> = {};
+
+    pacientesLista.forEach((paciente) => {
+      const historico = paciente.historico || [];
+
+      historico.forEach((item) => {
+        const data = converterData(item.data);
+        const pontos = Number(item.pontos) || 0;
+
+        if (!data) return;
+        if (data.getFullYear() !== anoAtual) return;
+        if (pontos <= 0) return;
+
+        const mes = data.getMonth();
+
+        if (!pontosPorMes[mes]) {
+          pontosPorMes[mes] = 0;
+        }
+
+        pontosPorMes[mes] += pontos;
+      });
+    });
+
+    const mesesComDados = Object.keys(pontosPorMes)
+      .map(Number)
+      .sort((a, b) => a - b);
+
+    if (mesesComDados.length === 0) {
+      return [
+        {
+          mes: "Atual",
+          pontos: totalFallback,
+        },
+      ];
+    }
+
+    let acumulado = 0;
+
+    return mesesComDados.map((mesNumero, index) => {
+      acumulado += pontosPorMes[mesNumero] || 0;
+
+      const ultimo = index === mesesComDados.length - 1;
+
+      return {
+        mes: ultimo ? "Atual" : meses[mesNumero],
+        pontos: acumulado,
+      };
+    });
+  }
 
   async function carregarDashboard() {
     setCarregando(true);
@@ -85,44 +180,68 @@ export default function Dashboard() {
     if (erroPacientes) console.error(erroPacientes);
     if (erroResgates) console.error(erroResgates);
 
-    setPacientes((pacientesData as Paciente[]) || []);
+    const pacientesFormatados = (pacientesData as Paciente[]) || [];
 
     const resgatesFormatados =
       resgatesData?.map((r: any) => ({
         paciente: r.pacientes?.nome || "Paciente",
         brinde: r.brindes?.nome || "Brinde",
-        pontos: r.pontos_usados || 0,
+        pontos: Number(r.pontos_usados) || 0,
         data: r.created_at
           ? new Date(r.created_at).toLocaleString("pt-BR")
           : "-",
         status: r.status || "Pendente",
       })) || [];
 
+    const pontosAtuaisTemp = pacientesFormatados.reduce(
+      (total, paciente) => total + (Number(paciente.pontos) || 0),
+      0
+    );
+
+    const pontosResgatadosTemp = resgatesFormatados.reduce(
+      (total, item) => total + (Number(item.pontos) || 0),
+      0
+    );
+
+    const pontosDistribuidosFallback = pontosAtuaisTemp + pontosResgatadosTemp;
+
+    setPacientes(pacientesFormatados);
     setResgates(resgatesFormatados);
+
+    setDadosEvolucao(
+      gerarGraficoEvolucao(pacientesFormatados, pontosDistribuidosFallback)
+    );
+
     setCarregando(false);
   }
 
   const totalPacientes = pacientes.length;
 
   const pontosAtuais = pacientes.reduce(
-    (total, paciente) => total + (paciente.pontos || 0),
+    (total, paciente) => total + (Number(paciente.pontos) || 0),
     0
   );
 
-  const pontosDistribuidos = pacientes.reduce((total, paciente) => {
+  const pontosResgatados = resgates.reduce(
+    (total, item) => total + (Number(item.pontos) || 0),
+    0
+  );
+
+  const pontosDistribuidosHistorico = pacientes.reduce((total, paciente) => {
     const historico = paciente.historico || [];
-    const somaHistorico = historico.reduce(
-      (soma, item) => soma + item.pontos,
-      0
-    );
+
+    const somaHistorico = historico.reduce((soma, item) => {
+      const pontos = Number(item.pontos) || 0;
+      return pontos > 0 ? soma + pontos : soma;
+    }, 0);
 
     return total + somaHistorico;
   }, 0);
 
-  const pontosResgatados = resgates.reduce(
-    (total, item) => total + item.pontos,
-    0
-  );
+  const pontosDistribuidos =
+    pontosDistribuidosHistorico > 0
+      ? pontosDistribuidosHistorico
+      : pontosAtuais + pontosResgatados;
 
   const resgatesPendentes = resgates.filter(
     (item) => item.status === "Pendente" || item.status === "pendente"
@@ -196,13 +315,6 @@ export default function Dashboard() {
     { name: "Pendente", value: resgatesPendentes },
     { name: "Entregue", value: resgatesEntregues },
     { name: "Cancelado", value: resgatesCancelados },
-  ];
-
-  const dadosEvolucao = [
-    { mes: "Jan", pontos: Math.round(pontosDistribuidos * 0.25) || 200 },
-    { mes: "Fev", pontos: Math.round(pontosDistribuidos * 0.45) || 500 },
-    { mes: "Mar", pontos: Math.round(pontosDistribuidos * 0.7) || 900 },
-    { mes: "Atual", pontos: pontosDistribuidos || pontosAtuais || 1200 },
   ];
 
   const coresStatus = ["#f2b705", "#4c9a2a", "#ef4444"];
@@ -368,35 +480,59 @@ export default function Dashboard() {
         </section>
 
         <section className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-6">
-          <div className="xl:col-span-2 bg-white rounded-[2rem] shadow p-6">
-            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
-              <div>
-                <h2 className="text-2xl font-black">Evolução de Pontos</h2>
-                <p className="text-gray-500 text-sm">
-                  Visão geral dos pontos movimentados no programa.
-                </p>
+          <div className="xl:col-span-2 relative overflow-hidden bg-white rounded-[2rem] shadow-xl p-6 border border-white">
+            <div className="absolute right-[-80px] top-[-80px] w-52 h-52 bg-[#174f8c]/10 rounded-full blur-3xl" />
+            <div className="absolute left-[-80px] bottom-[-80px] w-52 h-52 bg-[#4c9a2a]/10 rounded-full blur-3xl" />
+
+            <div className="relative z-10">
+              <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+                <div>
+                  <span className="inline-flex items-center gap-2 bg-[#eef4fa] text-[#174f8c] px-4 py-2 rounded-full text-xs font-black mb-3">
+                    <TrendingUp size={15} />
+                    Crescimento do programa
+                  </span>
+
+                  <h2 className="text-2xl font-black">Evolução de Pontos</h2>
+
+                  <p className="text-gray-500 text-sm">
+                    Visão geral dos pontos movimentados no programa.
+                  </p>
+                </div>
+
+                <div className="bg-gradient-to-r from-[#174f8c] to-[#071d3a] text-white px-5 py-3 rounded-2xl font-black shadow-lg">
+                  {pontosDistribuidos.toLocaleString("pt-BR")} pts distribuídos
+                </div>
               </div>
 
-              <div className="bg-[#eef4fa] px-4 py-2 rounded-xl font-bold text-[#174f8c]">
-                {pontosDistribuidos.toLocaleString("pt-BR")} pts distribuídos
-              </div>
+              {dadosEvolucao.length === 0 ? (
+                <div className="h-[300px] flex items-center justify-center bg-[#f7fafc] rounded-3xl">
+                  <p className="text-gray-500 font-bold">
+                    Nenhuma movimentação registrada ainda.
+                  </p>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={dadosEvolucao}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#dce5ef" />
+                    <XAxis dataKey="mes" />
+                    <YAxis />
+                    <Tooltip />
+                    <Line
+                      type="monotone"
+                      dataKey="pontos"
+                      stroke="#174f8c"
+                      strokeWidth={4}
+                      dot={{
+                        r: 6,
+                        strokeWidth: 3,
+                        stroke: "#174f8c",
+                        fill: "#ffffff",
+                      }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              )}
             </div>
-
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={dadosEvolucao}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="mes" />
-                <YAxis />
-                <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="pontos"
-                  stroke="#063669"
-                  strokeWidth={4}
-                  dot={{ r: 6 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
           </div>
 
           <div className="bg-white rounded-[2rem] shadow p-6">

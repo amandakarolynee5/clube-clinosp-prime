@@ -15,6 +15,7 @@ import {
   Settings,
   Star,
   LogOut,
+  Sparkles,
 } from "lucide-react";
 import { supabase } from "../lib/supabase";
 
@@ -125,68 +126,112 @@ export default function Sidebar() {
   );
 
   return (
-    <aside className="w-80 min-h-screen bg-[#174f8c] text-white p-6 hidden lg:flex flex-col justify-between fixed left-0 top-0">
-      
-      {/* TOPO */}
-      <div>
-        <div className="mb-10 flex justify-center">
-          <Image
-            src="/logo-clinosp.png"
-            alt="Clinosp Prime"
-            width={400}
-            height={200}
-            priority
-            className="object-contain w-[300px] h-auto"
-          />
+    <aside className="w-72 min-h-screen fixed left-0 top-0 hidden lg:flex flex-col justify-between overflow-hidden bg-[#071d3a] text-white shadow-2xl">
+      <div className="absolute inset-0 bg-gradient-to-b from-[#174f8c] via-[#0d3765] to-[#071d3a]" />
+
+      <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-[#4c9a2a]/25 blur-3xl" />
+
+      <div className="absolute bottom-20 -left-24 w-72 h-72 rounded-full bg-[#9ac84b]/20 blur-3xl" />
+
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.13),transparent_35%)]" />
+
+      <div className="relative z-10 p-4 flex flex-col min-h-screen justify-between">
+        {/* TOPO */}
+        <div>
+          <div className="mb-6 flex justify-center">
+            <div className="rounded-[2rem] px-4 py-3 bg-white/5 border border-white/10 shadow-inner">
+              <Image
+                src="/logo-clinosp.png"
+                alt="Clinosp Prime"
+                width={400}
+                height={200}
+                priority
+                className="object-contain w-[180px] h-auto"
+              />
+            </div>
+          </div>
+
+          {/* MENU */}
+          <nav className="space-y-1">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+
+              const ativo =
+                pathname === item.href ||
+                (item.href !== "/" && pathname.startsWith(item.href));
+
+              return (
+                <Link href={item.href} key={item.name}>
+                  <div
+                    className={`group relative flex items-center gap-3 px-4 py-3 rounded-2xl font-bold cursor-pointer transition-all duration-300 ${
+                      ativo
+                        ? "bg-white text-[#174f8c] shadow-xl"
+                        : "text-white/85 hover:bg-white/12 hover:translate-x-1"
+                    }`}
+                  >
+                    {ativo && (
+                      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-8 rounded-r-full bg-[#9ac84b]" />
+                    )}
+
+                    <div
+                      className={`w-8 h-8 rounded-xl flex items-center justify-center transition ${
+                        ativo
+                          ? "bg-[#eef4fa] text-[#174f8c]"
+                          : "bg-white/10 text-white group-hover:bg-white/20"
+                      }`}
+                    >
+                      <Icon size={18} />
+                    </div>
+
+                    <span className="text-[15px]">{item.name}</span>
+
+                    {ativo && (
+                      <Sparkles
+                        size={14}
+                        className="ml-auto text-[#4c9a2a]"
+                      />
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
+          </nav>
         </div>
 
-        {/* MENU */}
-        <nav className="space-y-3">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
+        {/* PARTE DE BAIXO */}
+        <div className="space-y-3 pt-2">
+          {/* CARD */}
+          <div className="relative overflow-hidden rounded-3xl p-4 bg-white/12 border border-white/20 backdrop-blur-md shadow-xl">
+            <div className="absolute -right-10 -top-10 w-28 h-28 bg-[#9ac84b]/20 rounded-full blur-2xl" />
 
-            const ativo =
-              pathname === item.href ||
-              (item.href !== "/" && pathname.startsWith(item.href));
+            <div className="relative z-10">
+              <div className="w-10 h-10 rounded-2xl bg-white/15 flex items-center justify-center mb-3">
+                <Star className="text-[#9ac84b]" size={18} />
+              </div>
 
-            return (
-              <Link href={item.href} key={item.name}>
-                <div
-                  className={`flex items-center gap-3 px-5 py-4 rounded-2xl font-semibold cursor-pointer transition-all duration-300 ${
-                    ativo
-                      ? "bg-white text-[#174f8c] shadow"
-                      : "text-white/90 hover:bg-white/15 hover:translate-x-1"
-                  }`}
-                >
-                  <Icon size={22} />
-                  <span>{item.name}</span>
-                </div>
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
+              <h3 className="font-black text-base">
+                Clube Clinosp Prime
+              </h3>
 
-      {/* PARTE DE BAIXO */}
-      <div className="space-y-4">
+              <p className="text-xs text-white/75 mt-2 leading-5">
+                Fidelizar é transformar sorrisos em experiências.
+              </p>
 
-        {/* CARD */}
-        <div className="rounded-3xl p-5 bg-white/15 border border-white/20">
-          <Star className="text-[#9ac84b] mb-3" />
-          <h3 className="font-bold text-lg">Clube Clinosp Prime</h3>
-          <p className="text-sm text-white/80 mt-2">
-            Fidelizar é transformar sorrisos em experiências.
-          </p>
+              <div className="mt-3 h-2 rounded-full bg-white/10 overflow-hidden">
+                <div className="h-full w-3/4 bg-gradient-to-r from-[#9ac84b] to-[#4c9a2a]" />
+              </div>
+            </div>
+          </div>
+
+          {/* LOGOUT */}
+          <button
+            onClick={sair}
+            className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[#ff2f45] to-[#d9162f] hover:from-[#e51f35] hover:to-[#b90f24] py-3 rounded-2xl font-black transition-all shadow-xl hover:scale-[1.02]"
+          >
+            <LogOut size={17} />
+            Sair do sistema
+          </button>
         </div>
-
-        {/* LOGOUT */}
-        <button
-          onClick={sair}
-          className="flex items-center justify-center gap-2 w-full bg-red-500 hover:bg-red-600 py-3 rounded-2xl font-bold transition-all shadow-lg"
-        >
-          <LogOut size={18} />
-          Sair do sistema
-        </button>
       </div>
     </aside>
   );
