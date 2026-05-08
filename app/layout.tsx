@@ -13,12 +13,12 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Clube Clinosp Prime | Benefícios Premium",
     description: "Conheça o Clube Clinosp Prime e aproveite benefícios exclusivos, recompensas e experiências premium.",
-    url: "https://clube.avaliacaoclinosprime.com.br/clube",
+    url: "https://clube.avaliacaoclinosprime.com.br/preview-v2.png",
     siteName: "Clube Clinosp Prime",
 
     images: [
       {
-        url: "https://clube.avaliacaoclinosprime.com.br/preview.png",
+        url: "https://clube.avaliacaoclinosprime.com.br/preview-v2.png",
         width: 1200,
         height: 630,
         alt: "Clube Clinosp Prime",
