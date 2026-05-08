@@ -77,10 +77,10 @@ export default function LoginPage() {
       <div className="absolute inset-0 bg-black/55 backdrop-blur-[4px]" />
 
       {/* CONTEÚDO */}
-      <section className="relative z-10 w-full max-w-5xl bg-white/70 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2 border border-white/40">
+      <section className="relative z-10 w-full max-w-4xl bg-white/70 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2 border border-white/40">
 
         {/* LADO ESQUERDO */}
-        <div className="hidden lg:flex flex-col justify-between bg-gradient-to-br from-[#071d3a] via-[#174f8c] to-[#4c9a2a] text-white p-10 min-h-[580px]">
+        <div className="hidden lg:flex flex-col justify-between bg-gradient-to-br from-[#071d3a] via-[#174f8c] to-[#4c9a2a] text-white p-8 min-h-[520px]">
           
           <div>
             <Image
@@ -129,7 +129,7 @@ export default function LoginPage() {
         </div>
 
         {/* LADO DIREITO */}
-        <div className="flex flex-col justify-center p-8 sm:p-10 lg:p-12 min-h-[580px] bg-white">
+        <div className="flex flex-col justify-center p-8 sm:p-10 lg:p-10 min-h-[580px] bg-white">
           
           <div className="flex justify-center mb-8">
             <Image
