@@ -4,15 +4,15 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Clube Clinosp Prime",
-  description: "Programa de fidelidade premium da Clinosp Prime",
+  description: "Conheça o Clube Clinosp Prime e aproveite benefícios exclusivos, recompensas e experiências premium.",
 
   icons: {
     icon: "/favicon.ico",
   },
 
   openGraph: {
-    title: "Clube Clinosp Prime",
-    description: "Programa de fidelidade premium da Clinosp Prime",
+    title: "Clube Clinosp Prime | Benefícios Premium",
+    description: "Conheça o Clube Clinosp Prime e aproveite benefícios exclusivos, recompensas e experiências premium.",
     url: "https://clube.avaliacaoclinosprime.com.br/clube",
     siteName: "Clube Clinosp Prime",
 
