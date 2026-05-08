@@ -2,6 +2,21 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
+  const rotaAtual = request.nextUrl.pathname;
+
+  // LIBERA ARQUIVOS PUBLICOS
+  if (
+    rotaAtual === "/preview.png" ||
+    rotaAtual === "/favicon.ico" ||
+    rotaAtual === "/logo.png" ||
+    rotaAtual === "/logo-clinosp.png" ||
+    rotaAtual.startsWith("/_next") ||
+    rotaAtual.startsWith("/api") ||
+    rotaAtual.match(/\.(png|jpg|jpeg|gif|webp|svg|ico)$/)
+  ) {
+    return NextResponse.next();
+  }
+
   let response = NextResponse.next({
     request,
   });
@@ -35,8 +50,6 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const rotaAtual = request.nextUrl.pathname;
-
   const rotasPublicas = ["/login", "/clube"];
 
   const rotaPublica = rotasPublicas.some((rota) =>
@@ -55,7 +68,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|favicon-v2.ico|preview.png|logo.png|logo-clinosp.png|.*\\.(?:png|jpg|jpeg|gif|webp|svg|ico)).*)",
-  ],
+  matcher: ["/:path*"],
 };
