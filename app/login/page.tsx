@@ -64,15 +64,24 @@ export default function LoginPage() {
   }
 
   return (
-    <main
-      className="min-h-screen flex items-center justify-center px-6 py-8 text-[#071d3a] bg-cover bg-center bg-no-repeat"
-      style={{
-        backgroundImage:
-          "url('/fundo-login.jpg')",
-      }}
-    >
-      <section className="w-full max-w-5xl bg-white/70 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2 border border-white/40">
+    <main className="relative min-h-screen flex items-center justify-center px-6 py-8 text-[#071d3a] overflow-hidden">
+      
+      {/* IMAGEM DE FUNDO */}
+      <img
+        src="/fundo-login.jpg"
+        alt="Fundo Clinosp Prime"
+        className="absolute inset-0 w-full h-full object-cover scale-105"
+      />
+
+      {/* CAMADA ESCURA */}
+      <div className="absolute inset-0 bg-black/55 backdrop-blur-[4px]" />
+
+      {/* CONTEÚDO */}
+      <section className="relative z-10 w-full max-w-5xl bg-white/70 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2 border border-white/40">
+
+        {/* LADO ESQUERDO */}
         <div className="hidden lg:flex flex-col justify-between bg-gradient-to-br from-[#071d3a] via-[#174f8c] to-[#4c9a2a] text-white p-10 min-h-[580px]">
+          
           <div>
             <Image
               src={LOGO}
@@ -98,9 +107,20 @@ export default function LoginPage() {
           </div>
 
           <div className="grid grid-cols-3 gap-4 mt-10">
-            <MiniCard icon={<ShieldCheck size={18} />} title="Seguro" />
-            <MiniCard icon={<Gift size={18} />} title="Brindes" />
-            <MiniCard icon={<Star size={18} />} title="Pontos" />
+            <MiniCard
+              icon={<ShieldCheck size={18} />}
+              title="Seguro"
+            />
+
+            <MiniCard
+              icon={<Gift size={18} />}
+              title="Brindes"
+            />
+
+            <MiniCard
+              icon={<Star size={18} />}
+              title="Pontos"
+            />
           </div>
 
           <p className="text-sm text-white/70 mt-8">
@@ -108,7 +128,9 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="flex flex-col justify-center p-8 sm:p-10 lg:p-12 min-h-[580px] bg-white/85">
+        {/* LADO DIREITO */}
+        <div className="flex flex-col justify-center p-8 sm:p-10 lg:p-12 min-h-[580px] bg-white">
+          
           <div className="flex justify-center mb-8">
             <Image
               src={LOGO}
@@ -120,7 +142,10 @@ export default function LoginPage() {
           </div>
 
           <div className="w-14 h-14 rounded-2xl bg-[#eaf3e5] flex items-center justify-center mb-6">
-            <Lock className="text-[#4c9a2a]" size={27} />
+            <Lock
+              className="text-[#4c9a2a]"
+              size={27}
+            />
           </div>
 
           <h2 className="text-4xl font-black text-[#071d3a]">
@@ -133,16 +158,24 @@ export default function LoginPage() {
           </p>
 
           <div className="mt-8 space-y-5">
+
             <div>
-              <label className="font-bold text-sm">Email</label>
+              <label className="font-bold text-sm">
+                Email
+              </label>
 
               <div className="mt-2 flex items-center gap-3 border border-gray-200 rounded-2xl px-4 py-4 bg-white shadow-sm focus-within:ring-2 focus-within:ring-[#174f8c]/20">
-                <Mail size={18} className="text-gray-400" />
+                <Mail
+                  size={18}
+                  className="text-gray-400"
+                />
 
                 <input
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) =>
+                    setEmail(e.target.value)
+                  }
                   placeholder="seu@email.com"
                   className="w-full outline-none bg-transparent"
                 />
@@ -150,25 +183,44 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="font-bold text-sm">Senha</label>
+              <label className="font-bold text-sm">
+                Senha
+              </label>
 
               <div className="mt-2 flex items-center gap-3 border border-gray-200 rounded-2xl px-4 py-4 bg-white shadow-sm focus-within:ring-2 focus-within:ring-[#174f8c]/20">
-                <Lock size={18} className="text-gray-400" />
+                <Lock
+                  size={18}
+                  className="text-gray-400"
+                />
 
                 <input
-                  type={mostrarSenha ? "text" : "password"}
+                  type={
+                    mostrarSenha
+                      ? "text"
+                      : "password"
+                  }
                   value={senha}
-                  onChange={(e) => setSenha(e.target.value)}
+                  onChange={(e) =>
+                    setSenha(e.target.value)
+                  }
                   placeholder="Digite sua senha"
                   className="w-full outline-none bg-transparent"
                 />
 
                 <button
                   type="button"
-                  onClick={() => setMostrarSenha(!mostrarSenha)}
+                  onClick={() =>
+                    setMostrarSenha(
+                      !mostrarSenha
+                    )
+                  }
                   className="text-gray-400 hover:text-[#174f8c]"
                 >
-                  {mostrarSenha ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {mostrarSenha ? (
+                    <EyeOff size={18} />
+                  ) : (
+                    <Eye size={18} />
+                  )}
                 </button>
               </div>
             </div>
@@ -184,7 +236,9 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full bg-[#174f8c] hover:bg-[#123d6e] text-white py-4 rounded-2xl font-black shadow-lg transition disabled:opacity-60"
             >
-              {loading ? "Entrando..." : "Entrar no sistema"}
+              {loading
+                ? "Entrando..."
+                : "Entrar no sistema"}
             </button>
           </div>
 
@@ -209,12 +263,19 @@ function MiniCard({
   return (
     <div className="rounded-2xl border border-white/20 bg-white/15 p-4">
       <div className="mb-3">{icon}</div>
-      <p className="text-sm font-bold">{title}</p>
+
+      <p className="text-sm font-bold">
+        {title}
+      </p>
     </div>
   );
 }
 
-function Beneficio({ texto }: { texto: string }) {
+function Beneficio({
+  texto,
+}: {
+  texto: string;
+}) {
   return (
     <div className="flex min-h-[48px] items-center justify-center rounded-2xl bg-[#f7fafc] px-3 text-center text-xs font-bold text-[#174f8c]">
       {texto}
