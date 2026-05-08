@@ -226,7 +226,7 @@ export default function Sidebar() {
           {/* LOGOUT */}
           <button
             onClick={sair}
-            className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[#ff2f45] to-[#d9162f] hover:from-[#e51f35] hover:to-[#b90f24] py-3 rounded-2xl font-black transition-all shadow-xl hover:scale-[1.02]"
+            className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[#174f8c] to-[#071d3a] hover:from-[#2563a6] hover:to-[#174f8c] py-3 rounded-2xl font-black transition-all duration-300 shadow-lg hover:scale-[1.02]"
           >
             <LogOut size={17} />
             Sair do sistema
