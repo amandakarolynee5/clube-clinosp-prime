@@ -56,6 +56,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|logo-clinosp.png).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|favicon-v2.ico|preview.png|logo.png|logo-clinosp.png|.*\\.(?:png|jpg|jpeg|gif|webp|svg|ico)).*)",
   ],
 };
