@@ -126,26 +126,7 @@ export default function Sidebar() {
   );
 
   return (
-    <aside
-      className="
-      w-[220px]
-      lg:w-[240px]
-      xl:w-[260px]
-      2xl:w-[280px]
-      min-h-screen
-      fixed
-      left-0
-      top-0
-      hidden
-      lg:flex
-      flex-col
-      justify-between
-      overflow-hidden
-      bg-[#071d3a]
-      text-white
-      shadow-2xl
-    "
-    >
+    <aside className="w-72 h-screen fixed left-0 top-0 hidden lg:flex flex-col justify-between overflow-y-auto overflow-x-hidden bg-[#071d3a] text-white shadow-2xl">
       <div className="absolute inset-0 bg-gradient-to-b from-[#174f8c] via-[#0d3765] to-[#071d3a]" />
 
       <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-[#4c9a2a]/25 blur-3xl" />
@@ -165,13 +146,7 @@ export default function Sidebar() {
                 width={400}
                 height={200}
                 priority
-                className="
-                  object-contain
-                  w-[140px]
-                  lg:w-[150px]
-                  xl:w-[170px]
-                  h-auto
-                "
+                className="object-contain w-[180px] h-auto"
               />
             </div>
           </div>
@@ -208,9 +183,7 @@ export default function Sidebar() {
                       <Icon size={18} />
                     </div>
 
-                    <span className="text-[13px] xl:text-[15px]">
-                      {item.name}
-                    </span>
+                    <span className="text-[15px]">{item.name}</span>
 
                     {ativo && (
                       <Sparkles
@@ -236,11 +209,11 @@ export default function Sidebar() {
                 <Star className="text-[#9ac84b]" size={18} />
               </div>
 
-              <h3 className="font-black text-sm xl:text-base">
+              <h3 className="font-black text-base">
                 Clube Clinosp Prime
               </h3>
 
-              <p className="text-[11px] xl:text-xs text-white/75 mt-2 leading-5">
+              <p className="text-xs text-white/75 mt-2 leading-5">
                 Fidelizar é transformar sorrisos em experiências.
               </p>
 
@@ -253,26 +226,7 @@ export default function Sidebar() {
           {/* LOGOUT */}
           <button
             onClick={sair}
-            className="
-              flex
-              items-center
-              justify-center
-              gap-2
-              w-full
-              bg-gradient-to-r
-              from-[#174f8c]
-              to-[#071d3a]
-              hover:from-[#2563a6]
-              hover:to-[#174f8c]
-              py-3
-              rounded-2xl
-              font-black
-              text-sm
-              transition-all
-              duration-300
-              shadow-lg
-              hover:scale-[1.02]
-            "
+            className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[#174f8c] to-[#071d3a] hover:from-[#2563a6] hover:to-[#174f8c] py-3 rounded-2xl font-black transition-all duration-300 shadow-lg hover:scale-[1.02]"
           >
             <LogOut size={17} />
             Sair do sistema

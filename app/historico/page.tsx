@@ -1,7 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CheckCircle, Clock, XCircle, History, Star, Gift } from "lucide-react";
+import {
+  CheckCircle,
+  Clock,
+  XCircle,
+  History,
+  Star,
+  Gift,
+  RefreshCcw,
+  Search,
+  Sparkles,
+} from "lucide-react";
 import { supabase } from "../lib/supabase";
 
 type Movimentacao = {
@@ -32,6 +42,7 @@ export default function HistoricoPage() {
   const [movimentacoes, setMovimentacoes] = useState<Movimentacao[]>([]);
   const [resgates, setResgates] = useState<Resgate[]>([]);
   const [carregando, setCarregando] = useState(false);
+  const [busca, setBusca] = useState("");
 
   useEffect(() => {
     carregarHistorico();
@@ -73,9 +84,7 @@ export default function HistoricoPage() {
         pacientes: Array.isArray(item.pacientes)
           ? item.pacientes[0]
           : item.pacientes,
-        brindes: Array.isArray(item.brindes)
-          ? item.brindes[0]
-          : item.brindes,
+        brindes: Array.isArray(item.brindes) ? item.brindes[0] : item.brindes,
       })) || [];
 
     const movimentacoesFormatadas =
@@ -109,12 +118,12 @@ export default function HistoricoPage() {
 
   function corStatus(status: string) {
     if (status === "Entregue" || status === "entregue")
-      return "bg-green-100 text-green-700";
+      return "bg-emerald-50 text-emerald-700 border-emerald-200";
 
     if (status === "Cancelado" || status === "cancelado")
-      return "bg-red-100 text-red-700";
+      return "bg-red-50 text-red-700 border-red-200";
 
-    return "bg-yellow-100 text-yellow-700";
+    return "bg-amber-50 text-amber-700 border-amber-200";
   }
 
   function IconeStatus({ status }: { status: string }) {
@@ -148,13 +157,59 @@ export default function HistoricoPage() {
     (item) => item.status === "Cancelado" || item.status === "cancelado"
   ).length;
 
+  const resgatesFiltrados = resgates.filter((item) => {
+    const texto = busca.toLowerCase();
+
+    return (
+      item.pacientes?.nome?.toLowerCase().includes(texto) ||
+      item.brindes?.nome?.toLowerCase().includes(texto) ||
+      item.status?.toLowerCase().includes(texto)
+    );
+  });
+
+  const movimentacoesFiltradas = movimentacoes.filter((item) => {
+    const texto = busca.toLowerCase();
+
+    return (
+      item.pacientes?.nome?.toLowerCase().includes(texto) ||
+      item.tipo?.toLowerCase().includes(texto) ||
+      item.descricao?.toLowerCase().includes(texto)
+    );
+  });
+
   return (
-    <main className="min-h-screen bg-[#f3f7fb] p-8 text-[#071d3a]">
+    <main className="min-h-screen bg-gradient-to-br from-[#eef4fa] via-[#f8fbff] to-[#eef7ee] p-6 lg:p-8 text-[#071d3a]">
       <section className="mb-8">
-        <h1 className="text-4xl font-black">Histórico</h1>
-        <p className="text-gray-500 mt-2">
-          Acompanhe movimentações de pontos e controle os status dos resgates.
-        </p>
+        <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-r from-[#071d3a] via-[#174f8c] to-[#4c9a2a] p-8 text-white shadow-2xl">
+          <div className="absolute -right-20 -top-20 w-64 h-64 rounded-full bg-white/10 blur-3xl" />
+          <div className="absolute -left-20 bottom-0 w-64 h-64 rounded-full bg-[#9ac84b]/20 blur-3xl" />
+
+          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/15 border border-white/20 px-4 py-2 text-sm font-bold mb-4">
+                <Sparkles size={16} />
+                Clube Clinosp Prime
+              </div>
+
+              <h1 className="text-4xl lg:text-5xl font-black">
+                Histórico
+              </h1>
+
+              <p className="text-white/80 mt-3 max-w-2xl">
+                Acompanhe movimentações de pontos, resgates e status dos
+                benefícios entregues aos pacientes.
+              </p>
+            </div>
+
+            <button
+              onClick={carregarHistorico}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white text-[#174f8c] px-5 py-3 font-black shadow-xl hover:scale-[1.03] transition"
+            >
+              <RefreshCcw size={18} />
+              Atualizar
+            </button>
+          </div>
+        </div>
       </section>
 
       <section className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
@@ -167,13 +222,13 @@ export default function HistoricoPage() {
         <CardResumo
           titulo="Resgates pendentes"
           valor={resgatesPendentes.toString()}
-          icone={<Clock className="text-yellow-600" />}
+          icone={<Clock className="text-amber-600" />}
         />
 
         <CardResumo
           titulo="Entregues"
           valor={resgatesEntregues.toString()}
-          icone={<CheckCircle className="text-green-600" />}
+          icone={<CheckCircle className="text-emerald-600" />}
         />
 
         <CardResumo
@@ -183,38 +238,45 @@ export default function HistoricoPage() {
         />
       </section>
 
+      <section className="mb-8">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white shadow-xl p-4 flex items-center gap-3">
+          <Search className="text-[#174f8c]" size={20} />
+
+          <input
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            placeholder="Pesquisar por paciente, brinde, status ou tipo..."
+            className="w-full bg-transparent outline-none font-semibold text-[#071d3a] placeholder:text-gray-400"
+          />
+        </div>
+      </section>
+
       {carregando && (
-        <p className="font-bold text-[#174f8c] mb-6">Carregando histórico...</p>
+        <p className="font-bold text-[#174f8c] mb-6">
+          Carregando histórico...
+        </p>
       )}
 
-      <section className="bg-white rounded-3xl shadow p-6 mb-8">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-2xl bg-[#eaf3e5] flex items-center justify-center">
-            <Gift className="text-[#4c9a2a]" />
-          </div>
+      <section className="bg-white/90 backdrop-blur-xl rounded-[2rem] shadow-xl border border-white p-6 mb-8">
+        <TituloSecao
+          icone={<Gift className="text-[#4c9a2a]" />}
+          titulo="Histórico de Resgates"
+          subtitulo="Controle os resgates pendentes, entregues ou cancelados."
+          fundo="bg-[#eaf3e5]"
+        />
 
-          <div>
-            <h2 className="text-2xl font-black">Histórico de Resgates</h2>
-            <p className="text-sm text-gray-500">
-              Controle os resgates pendentes, entregues ou cancelados.
-            </p>
-          </div>
-        </div>
-
-        {resgates.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500">Nenhum resgate registrado ainda.</p>
-          </div>
+        {resgatesFiltrados.length === 0 ? (
+          <EstadoVazio texto="Nenhum resgate encontrado." />
         ) : (
           <div className="space-y-4">
-            {resgates.map((item) => (
+            {resgatesFiltrados.map((item) => (
               <div
                 key={item.id}
-                className="bg-[#f3f7fb] rounded-3xl p-5 hover:shadow-md transition"
+                className="group bg-gradient-to-r from-[#f8fbff] to-white rounded-3xl p-5 border border-[#e8eef5] hover:border-[#9ac84b]/50 hover:shadow-xl transition-all"
               >
                 <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 xl:items-center">
                   <div className="xl:col-span-3">
-                    <p className="font-black">
+                    <p className="font-black text-lg">
                       {item.pacientes?.nome || "Paciente"}
                     </p>
                     <p className="text-sm text-gray-500">
@@ -240,7 +302,7 @@ export default function HistoricoPage() {
                     <span
                       className={`${corStatus(
                         item.status
-                      )} inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm font-black`}
+                      )} inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm font-black border`}
                     >
                       <IconeStatus status={item.status} />
                       {item.status}
@@ -251,7 +313,7 @@ export default function HistoricoPage() {
                     <select
                       value={item.status}
                       onChange={(e) => alterarStatus(item.id, e.target.value)}
-                      className="w-full border rounded-2xl px-4 py-3 outline-none bg-white font-bold"
+                      className="w-full border border-[#dbe7f3] rounded-2xl px-4 py-3 outline-none bg-white font-bold shadow-sm focus:ring-2 focus:ring-[#4c9a2a]/30"
                     >
                       <option value="Pendente">Pendente</option>
                       <option value="Entregue">Entregue</option>
@@ -265,32 +327,22 @@ export default function HistoricoPage() {
         )}
       </section>
 
-      <section className="bg-white rounded-3xl shadow p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-2xl bg-[#eef3fb] flex items-center justify-center">
-            <History className="text-[#174f8c]" />
-          </div>
+      <section className="bg-white/90 backdrop-blur-xl rounded-[2rem] shadow-xl border border-white p-6">
+        <TituloSecao
+          icone={<History className="text-[#174f8c]" />}
+          titulo="Histórico de Pontos"
+          subtitulo="Veja todas as pontuações adicionadas aos pacientes."
+          fundo="bg-[#eef3fb]"
+        />
 
-          <div>
-            <h2 className="text-2xl font-black">Histórico de Pontos</h2>
-            <p className="text-sm text-gray-500">
-              Veja todas as pontuações adicionadas aos pacientes.
-            </p>
-          </div>
-        </div>
-
-        {movimentacoes.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500">
-              Nenhuma movimentação registrada ainda.
-            </p>
-          </div>
+        {movimentacoesFiltradas.length === 0 ? (
+          <EstadoVazio texto="Nenhuma movimentação encontrada." />
         ) : (
           <div className="space-y-4">
-            {movimentacoes.map((item) => (
+            {movimentacoesFiltradas.map((item) => (
               <div
                 key={item.id}
-                className="bg-[#f3f7fb] rounded-3xl p-5 hover:shadow-md transition"
+                className="group bg-gradient-to-r from-[#f8fbff] to-white rounded-3xl p-5 border border-[#e8eef5] hover:border-[#174f8c]/30 hover:shadow-xl transition-all"
               >
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:items-center">
                   <div>
@@ -324,6 +376,12 @@ export default function HistoricoPage() {
                     </p>
                   </div>
                 </div>
+
+                {item.descricao && (
+                  <div className="mt-4 rounded-2xl bg-[#eef4fa] px-4 py-3 text-sm text-gray-600 font-medium">
+                    {item.descricao}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -343,17 +401,54 @@ function CardResumo({
   icone: React.ReactNode;
 }) {
   return (
-    <div className="bg-white rounded-3xl shadow p-6">
+    <div className="group bg-white/90 backdrop-blur-xl rounded-3xl shadow-xl border border-white p-6 hover:-translate-y-1 hover:shadow-2xl transition-all">
       <div className="flex justify-between items-start">
         <div>
-          <p className="text-gray-500">{titulo}</p>
-          <h2 className="text-3xl font-black mt-3">{valor}</h2>
+          <p className="text-gray-500 font-semibold">{titulo}</p>
+          <h2 className="text-3xl font-black mt-3 text-[#071d3a]">
+            {valor}
+          </h2>
         </div>
 
-        <div className="w-14 h-14 rounded-2xl bg-[#f3f7fb] flex items-center justify-center">
+        <div className="w-14 h-14 rounded-2xl bg-[#f3f7fb] flex items-center justify-center shadow-inner group-hover:scale-110 transition">
           {icone}
         </div>
       </div>
+    </div>
+  );
+}
+
+function TituloSecao({
+  icone,
+  titulo,
+  subtitulo,
+  fundo,
+}: {
+  icone: React.ReactNode;
+  titulo: string;
+  subtitulo: string;
+  fundo: string;
+}) {
+  return (
+    <div className="flex items-center gap-3 mb-6">
+      <div
+        className={`w-12 h-12 rounded-2xl ${fundo} flex items-center justify-center shadow-inner`}
+      >
+        {icone}
+      </div>
+
+      <div>
+        <h2 className="text-2xl font-black">{titulo}</h2>
+        <p className="text-sm text-gray-500">{subtitulo}</p>
+      </div>
+    </div>
+  );
+}
+
+function EstadoVazio({ texto }: { texto: string }) {
+  return (
+    <div className="text-center py-14 rounded-3xl bg-[#f8fbff] border border-dashed border-[#dbe7f3]">
+      <p className="text-gray-500 font-semibold">{texto}</p>
     </div>
   );
 }
