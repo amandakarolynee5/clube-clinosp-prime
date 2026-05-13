@@ -358,7 +358,7 @@ export default function PacientesPage() {
                         </button>
                       </Link>
 
-                      <div className="relative">
+                      <div className="relative z-10">
                         <button
                           onClick={() =>
                             setMenuAberto(
@@ -372,7 +372,7 @@ export default function PacientesPage() {
                         </button>
 
                         {menuAberto === paciente.id && (
-                          <div className="absolute right-0 top-12 z-50 bg-white rounded-3xl shadow-2xl border p-2 w-72">
+                          <div className="absolute right-0 top-12 z-[999] bg-white rounded-3xl shadow-2xl border p-2 w-72">
                             <BotaoPonto
                               emoji="📅"
                               titulo="Consulta"
