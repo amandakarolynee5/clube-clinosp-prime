@@ -15,6 +15,7 @@ import {
   TrendingUp,
   UserCheck,
   ShieldCheck,
+  Pencil,
 } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import {
@@ -187,7 +188,8 @@ export default function PacientesPage() {
             </h1>
 
             <p className="text-white/80 mt-4 text-lg max-w-2xl">
-              Gerencie pontos, níveis, evolução e engajamento dos pacientes no Clube Clinosp Prime.
+              Gerencie pontos, níveis, evolução e engajamento dos pacientes no
+              Clube Clinosp Prime.
             </p>
           </div>
 
@@ -239,7 +241,8 @@ export default function PacientesPage() {
           <div>
             <h2 className="text-2xl font-black">Lista de pacientes</h2>
             <p className="text-sm text-gray-500">
-              Busque, filtre e adicione pontos conforme as regras das configurações.
+              Busque, filtre e adicione pontos conforme as regras das
+              configurações.
             </p>
           </div>
 
@@ -341,10 +344,17 @@ export default function PacientesPage() {
                       </div>
                     </div>
 
-                    <div className="xl:col-span-2 flex gap-2 xl:justify-end">
+                    <div className="xl:col-span-2 flex flex-wrap gap-2 xl:justify-end">
                       <Link href={`/pacientes/${paciente.id}`}>
                         <button className="px-4 py-2 rounded-xl bg-[#174f8c] text-white font-bold shadow">
                           Ver
+                        </button>
+                      </Link>
+
+                      <Link href={`/pacientes/${paciente.id}/editar`}>
+                        <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#4c9a2a] text-white font-bold shadow hover:bg-[#3f8423] transition">
+                          <Pencil size={16} />
+                          Editar
                         </button>
                       </Link>
 
@@ -368,7 +378,9 @@ export default function PacientesPage() {
                               titulo="Consulta"
                               pontos={`+${config.pontos_consulta}`}
                               descricao="Comparecimento"
-                              onClick={() => adicionarPontos(paciente, "consulta")}
+                              onClick={() =>
+                                adicionarPontos(paciente, "consulta")
+                              }
                               icon={<UserCheck size={18} />}
                             />
 
@@ -377,7 +389,9 @@ export default function PacientesPage() {
                               titulo="Indicação"
                               pontos={`+${config.pontos_indicacao}`}
                               descricao="Paciente indicou alguém"
-                              onClick={() => adicionarPontos(paciente, "indicacao")}
+                              onClick={() =>
+                                adicionarPontos(paciente, "indicacao")
+                              }
                               icon={<Users size={18} />}
                             />
 
@@ -386,7 +400,9 @@ export default function PacientesPage() {
                               titulo="Prevenção"
                               pontos={`+${config.pontos_prevencao}`}
                               descricao="Ação preventiva"
-                              onClick={() => adicionarPontos(paciente, "prevencao")}
+                              onClick={() =>
+                                adicionarPontos(paciente, "prevencao")
+                              }
                               icon={<ShieldCheck size={18} />}
                             />
 
